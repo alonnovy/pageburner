@@ -1,0 +1,5 @@
+*.log
+.DS_Store
+babel.config.js
+node_modules
+yarn.lock
