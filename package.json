@@ -15,7 +15,8 @@
   "typings": "dist/index.d.ts",
   "scripts": {
     "tsc": "tsc -p . --watch",
-    "build": "tsc -p . && yarn babel ./dist -d ./dist"
+    "build": "tsc -p . && yarn babel ./dist -d ./dist",
+    "jsx": "yarn babel ./dist -d ./dist"
   },
   "dependencies": {
     "lodash": "^4.17.21"
