@@ -4,16 +4,16 @@ import _ from "lodash";
 import { useRef } from "react";
 import { PageAnimation } from "./types";
 import { Page } from "./page";
-import { View } from "react-native";
+import { View, Text } from "react-native";
 
-type PageAnimationSpec = {
+export type PageAnimationSpec = {
   incoming?: PageAnimation | PageAnimation[];
   outgoing?: PageAnimation | PageAnimation[];
 };
 
-type PageAnimationSpecFn = (spec: PageAnimationSpec) => void;
+export type PageAnimationSpecFn = (spec: PageAnimationSpec) => void;
 
-type PageFlow = {
+export type PageFlow = {
   show: (page: JSX.Element) => { animate: PageAnimationSpecFn };
 
   when: (predicate: boolean) => {
@@ -21,20 +21,20 @@ type PageFlow = {
   };
 };
 
-type ViewFn = (props?: RenderProps) => JSX.Element;
+export type ViewFn = (props?: RenderProps) => JSX.Element;
 
 type PageAnnotations = {
   [key: string]: "new" | "removed" | undefined;
 };
 
-type PageAnimations = {
+export type PageAnimations = {
   [key: string]: {
     incoming: PageAnimation[];
     outgoing: PageAnimation[];
   };
 };
 
-type RenderProps = { width?: number | string; height?: number | string };
+export type RenderProps = { width?: number | string; height?: number | string };
 
 export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
   let priorPagesRef = useRef<JSX.Element[]>(
@@ -114,10 +114,11 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
             height,
             backgroundColor: "white",
             borderColor: "black",
-            borderWidth: 3,
+            borderWidth: 20,
             borderRadius: 15,
           }}
         >
+          <Text></Text>
           {pages.map((pg, idx) => (
             <View
               key={`pg-background-${pg.key}`}
