@@ -1,5 +1,5 @@
 import { ImageStyle, TextStyle, ViewStyle } from "react-native";
-import { Patch } from "../types";
+import { Patch } from "./patch";
 import * as _ from "lodash";
 
 function resolveOverrides<TStyle extends ViewStyle | TextStyle | ImageStyle>(
