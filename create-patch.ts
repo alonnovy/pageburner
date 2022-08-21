@@ -20,7 +20,7 @@ export function createPatch<TOverrides extends string | void>(
       result.image!._overrides[k] = resolveOverrides(
         result.image!,
         result.image!._overrides[k]!
-      );
+      ) as any;
     }
   }
 
@@ -29,7 +29,7 @@ export function createPatch<TOverrides extends string | void>(
       result.text!._overrides[k] = resolveOverrides(
         result.text!,
         result.text!._overrides[k]!
-      );
+      ) as any;
     }
   }
 
@@ -38,7 +38,7 @@ export function createPatch<TOverrides extends string | void>(
       result.view!._overrides[k] = resolveOverrides(
         result.view!,
         result.view!._overrides[k]!
-      );
+      ) as any;
     }
   }
 

@@ -1,8 +1,6 @@
-export type Component<TProps extends any | void> = (
-  props: TProps
-) => JSX.Element;
+export type Widget<TProps extends any | void> = (props: TProps) => JSX.Element;
 
-export type Container<TProps> = (
+export type ParentWidget<TProps> = (
   props: TProps & { children?: JSX.Element }
 ) => JSX.Element;
 
