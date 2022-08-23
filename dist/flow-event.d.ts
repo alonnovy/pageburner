@@ -1,1 +1,6 @@
-export declare type FlowEvent<T extends string, D extends Object | void = void> = D extends void ? T : Record<T, D>;
+export declare type FlowEvent<T> = T extends [infer K, infer D] ? {
+    type: K;
+    data: D;
+} : {
+    type: T;
+};
