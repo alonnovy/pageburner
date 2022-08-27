@@ -5,3 +5,4 @@ export * from "./patch";
 export * from "./create-patch";
 export * from "./flow-event";
 export * from "./useUrlParams";
+export * from "./useScreenProperties";
