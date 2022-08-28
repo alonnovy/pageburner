@@ -19,10 +19,10 @@
     "jsx": "yarn babel ./dist -d ./dist"
   },
   "dependencies": {
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "bignumber.js": "^9.1.0"
   },
   "peerDependencies": {
-    "bignumber.js": "^9.1.0",
     "react": "18.0.0",
     "react-dom": "18.0.0",
     "react-native": "0.69.4",
