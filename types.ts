@@ -1,8 +1,10 @@
-export type Widget<TProps extends any | void> = (props: TProps) => JSX.Element;
+export type Widget<TProps extends any | void> = (
+  props: TProps
+) => JSX.Element | null;
 
 export type ParentWidget<TProps> = (
   props: TProps & { children?: JSX.Element }
-) => JSX.Element;
+) => JSX.Element | null;
 
 export type PageAnimation =
   | "slideFromRight"

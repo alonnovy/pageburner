@@ -1,4 +1,3 @@
-import { useState } from "react";
 import _ from "lodash";
 import { ScaledSize, useWindowDimensions } from "react-native";
 
