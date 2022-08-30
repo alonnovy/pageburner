@@ -8,12 +8,12 @@ export type Patch<TOverrides extends string | void = void> = {
   };
   text?: TextStyle & {
     _overrides?: {
-      [name in TOverrides extends string ? TOverrides : string]: ViewStyle;
+      [name in TOverrides extends string ? TOverrides : string]: TextStyle;
     };
   };
   image?: ImageStyle & {
     _overrides?: {
-      [name in TOverrides extends string ? TOverrides : string]: ViewStyle;
+      [name in TOverrides extends string ? TOverrides : string]: ImageStyle;
     };
   };
 };
