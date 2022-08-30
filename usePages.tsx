@@ -151,8 +151,6 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
                     backgroundColor: "lightgray",
                     width,
                     height,
-                    borderColor: "gray",
-                    borderWidth: 1,
                   }}
                 >
                   {pg}
