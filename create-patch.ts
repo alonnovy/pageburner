@@ -10,9 +10,10 @@ function resolveOverrides<TStyle extends ViewStyle | TextStyle | ImageStyle>(
   return Object.assign(result, overrides);
 }
 
-export function createPatch<TOverrides extends string | void>(
-  target: Patch<TOverrides>
-) {
+export function createPatch<
+  TOverrides extends string | void,
+  TPatch extends Patch<TOverrides> & { [key: string]: any }
+>(target: TPatch) {
   let result = _.clone(target);
 
   if (result.image) {
@@ -41,6 +42,14 @@ export function createPatch<TOverrides extends string | void>(
       ) as any;
     }
   }
+
+  const customKeys = _.keys(result).filter(
+    (k) => !_.includes(["view", "text", "image"], k)
+  ) as (keyof TPatch)[];
+
+  customKeys.forEach((k) => {
+    result[k] = createPatch(result[k]);
+  });
 
   return result;
 }

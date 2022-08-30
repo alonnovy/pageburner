@@ -1,2 +1,4 @@
 import { Patch } from "./patch";
-export declare function createPatch<TOverrides extends string | void>(target: Patch<TOverrides>): Patch<TOverrides>;
+export declare function createPatch<TOverrides extends string | void, TPatch extends Patch<TOverrides> & {
+    [key: string]: any;
+}>(target: TPatch): TPatch;
