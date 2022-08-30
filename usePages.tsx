@@ -56,6 +56,7 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
     pageAnimations[page.key!] = {
       incoming: ["slideFromRight"],
       outgoing: ["slideToRight"],
+      speed: "fast",
     };
     pages.push(page);
 
@@ -63,10 +64,12 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
       animate: (({
         incoming = "slideFromRight",
         outgoing = "slideToRight",
+        speed = "fast",
       }: PageAnimationSpec) => {
         pageAnimations[page.key!] = {
           incoming: _.isArray(incoming) ? incoming : [incoming],
           outgoing: _.isArray(outgoing) ? outgoing : [outgoing],
+          speed,
         };
       }) as PageAnimationSpecFn,
     };
@@ -134,7 +137,7 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
                     ? pageAnimations[pg.key!].outgoing
                     : "none"
                 }
-                animationSpeed={pageAnimations[pg.key!].speed}
+                animationSpeed={pageAnimations[pg.key!]?.speed}
                 onAnimationFinished={() => {
                   if (pageAnnotations[pg.key!] !== "removed") {
                     priorPagesRef.current.push(pg);
