@@ -1,13 +1,14 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { Animated, Keyboard } from "react-native";
-import { PageAnimation } from "./types";
+import { PageAnimation, PageAnimationSpeed } from "./types";
 import { Platform } from "react-native";
 import _ from "lodash";
 
-const duration = 300;
+const defaultDuration = 300;
 
 type PageProps = {
   animation?: PageAnimation | PageAnimation[];
+  animationSpeed?: PageAnimationSpeed;
   onAnimationFinished?: () => void;
   width: number;
   height: number;
@@ -16,6 +17,7 @@ type PageProps = {
 
 export function Page({
   animation,
+  animationSpeed,
   onAnimationFinished,
   width,
   height,
@@ -30,6 +32,18 @@ export function Page({
   const viewRef = useRef<Element>();
   const lastAnimationRef = useRef<Animated.CompositeAnimation>();
   const useNativeDriver = Platform.OS !== "web";
+  let duration: number;
+
+  switch (animationSpeed) {
+    case "slow":
+      duration = 1500;
+      break;
+    case "medium":
+      duration = 750;
+      break;
+    default:
+      duration = 300;
+  }
 
   const spin = spinAngle.interpolate({
     inputRange: [0, 360],

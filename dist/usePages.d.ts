@@ -3,6 +3,7 @@ import { PageAnimation } from "./types";
 export declare type PageAnimationSpec = {
     incoming?: PageAnimation | PageAnimation[];
     outgoing?: PageAnimation | PageAnimation[];
+    speed?: "fast" | "medium" | "slow";
 };
 export declare type PageAnimationSpecFn = (spec: PageAnimationSpec) => void;
 export declare type PageFlow = {
@@ -17,10 +18,7 @@ export declare type PageFlow = {
 };
 export declare type ViewFn = (props?: RenderProps) => JSX.Element;
 export declare type PageAnimations = {
-    [key: string]: {
-        incoming: PageAnimation[];
-        outgoing: PageAnimation[];
-    };
+    [key: string]: PageAnimationSpec;
 };
 export declare type RenderProps = {
     width?: number | string;

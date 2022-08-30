@@ -24,3 +24,5 @@ export type PageAnimation =
   | "flipUp"
   | "flipDown"
   | "none";
+
+export type PageAnimationSpeed = "fast" | "medium" | "slow";

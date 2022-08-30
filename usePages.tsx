@@ -9,6 +9,7 @@ import { View, Text } from "react-native";
 export type PageAnimationSpec = {
   incoming?: PageAnimation | PageAnimation[];
   outgoing?: PageAnimation | PageAnimation[];
+  speed?: "fast" | "medium" | "slow";
 };
 
 export type PageAnimationSpecFn = (spec: PageAnimationSpec) => void;
@@ -28,10 +29,7 @@ type PageAnnotations = {
 };
 
 export type PageAnimations = {
-  [key: string]: {
-    incoming: PageAnimation[];
-    outgoing: PageAnimation[];
-  };
+  [key: string]: PageAnimationSpec;
 };
 
 export type RenderProps = { width?: number | string; height?: number | string };
@@ -112,10 +110,6 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
             overflow: "hidden",
             width,
             height,
-            backgroundColor: "white",
-            borderColor: "black",
-            borderWidth: 20,
-            borderRadius: 15,
           }}
         >
           <Text></Text>
@@ -140,6 +134,7 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
                     ? pageAnimations[pg.key!].outgoing
                     : "none"
                 }
+                animationSpeed={pageAnimations[pg.key!].speed}
                 onAnimationFinished={() => {
                   if (pageAnnotations[pg.key!] !== "removed") {
                     priorPagesRef.current.push(pg);
