@@ -148,7 +148,6 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
               >
                 <View
                   style={{
-                    backgroundColor: "lightgray",
                     width,
                     height,
                   }}

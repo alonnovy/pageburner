@@ -1,5 +1,5 @@
-import { useEffect, useLayoutEffect, useRef } from "react";
-import { Animated, Keyboard } from "react-native";
+import React, { useEffect, useLayoutEffect, useRef } from "react";
+import { Animated, Keyboard, View, Text } from "react-native";
 import { PageAnimation, PageAnimationSpeed } from "./types";
 import { Platform } from "react-native";
 import _ from "lodash";
@@ -257,8 +257,11 @@ export function Page({
                 },
               ],
               opacity,
+              flex: 1,
             }
-          : undefined
+          : {
+              flex: 1,
+            }
       }
     >
       {children}
