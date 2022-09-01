@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { ScaledSize, useWindowDimensions } from "react-native";
+import { Platform, ScaledSize, useWindowDimensions } from "react-native";
 
 type ScreenPropertyOptions = {
   /** Maximum screen height up to which the screen is to be considered "short" */
@@ -25,7 +25,7 @@ export type ScreenProperties = ScaledSize & {
 const defaultScreenPropertyOptions = {
   throttlePeriod: 100,
   shortHeight: 600,
-  narrowWidth: 800,
+  narrowWidth: _.includes(["ios", "android"], Platform.OS) ? 600 : 500,
   tallHeight: 1000,
   wideWidth: 1400,
 } as ScreenPropertyOptions;
