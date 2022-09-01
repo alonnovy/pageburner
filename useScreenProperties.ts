@@ -36,9 +36,9 @@ export function useScreenProperties(options: ScreenPropertyOptions = {}) {
   const opt = Object.assign({}, defaultScreenPropertyOptions, options);
 
   return Object.assign({}, windowDimensions, {
-    isShort: window.innerHeight <= opt.shortHeight!,
-    isTall: window.innerHeight >= opt.tallHeight!,
-    isNarrow: window.innerWidth <= opt.narrowWidth!,
-    isWide: window.innerWidth >= opt.wideWidth!,
+    isShort: windowDimensions.height <= opt.shortHeight!,
+    isTall: windowDimensions.height >= opt.tallHeight!,
+    isNarrow: windowDimensions.width <= opt.narrowWidth!,
+    isWide: windowDimensions.width >= opt.wideWidth!,
   }) as ScreenProperties;
 }
