@@ -58,6 +58,8 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
       outgoing: ["slideToRight"],
       speed: "fast",
     };
+
+    pages = pages.filter((p) => p.key !== page.key); // remove duplicate, then add to end
     pages.push(page);
 
     return {
