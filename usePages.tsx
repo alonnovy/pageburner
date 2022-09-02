@@ -59,7 +59,6 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
       speed: "fast",
     };
 
-    pages = pages.filter((p) => p.key !== page.key); // remove duplicate, then add to end
     pages.push(page);
 
     return {
@@ -106,7 +105,7 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
         pageAnnotations[pg.key!] = "removed";
       });
 
-      pages = _.concat(pages, removedPages);
+      pages = _.uniqBy(_.concat(pages, removedPages), (p) => p.key);
 
       return (
         <View
