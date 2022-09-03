@@ -105,7 +105,7 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
         pageAnnotations[pg.key!] = "removed";
       });
 
-      pages = _.uniqBy(_.concat(pages, removedPages), (p) => p.key);
+      pages = _.unionWith(pages, removedPages, (p1, p2) => p1.key === p2.key);
 
       return (
         <View
