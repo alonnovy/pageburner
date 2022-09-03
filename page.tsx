@@ -10,8 +10,8 @@ type PageProps = {
   animation?: PageAnimation | PageAnimation[];
   animationSpeed?: PageAnimationSpeed;
   onAnimationFinished?: () => void;
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
   children: JSX.Element;
 };
 
@@ -19,8 +19,8 @@ export function Page({
   animation,
   animationSpeed,
   onAnimationFinished,
-  width,
-  height,
+  width = 400,
+  height = 400,
   children,
 }: PageProps) {
   const x = useRef<Animated.Value>(new Animated.Value(0)).current;

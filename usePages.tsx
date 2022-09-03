@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useInsertionEffect, useLayoutEffect } from "react";
 import { useState } from "react";
 import _ from "lodash";
 import { useRef } from "react";
 import { PageAnimation } from "./types";
 import { Page } from "./page";
-import { View, Text } from "react-native";
+import { View, Text, Pressable } from "react-native";
 
 export type PageAnimationSpec = {
   incoming?: PageAnimation | PageAnimation[];
@@ -12,13 +12,22 @@ export type PageAnimationSpec = {
   speed?: "fast" | "medium" | "slow";
 };
 
-export type PageAnimationSpecFn = (spec: PageAnimationSpec) => void;
+export type PageAnimationSpecFn = (spec: PageAnimationSpec) => {
+  onDismiss: PageDismissalSpecFn;
+};
+export type PageDismissalSpecFn = (fn: () => void) => void;
 
 export type PageFlow = {
-  show: (page: JSX.Element) => { animate: PageAnimationSpecFn };
+  show: (page: JSX.Element) => {
+    animate: PageAnimationSpecFn;
+    onDismiss: PageDismissalSpecFn;
+  };
 
   when: (predicate: boolean) => {
-    show: (page: JSX.Element) => { animate: PageAnimationSpecFn };
+    show: (page: JSX.Element) => {
+      animate: PageAnimationSpecFn;
+      onDismiss: PageDismissalSpecFn;
+    };
   };
 };
 
@@ -26,6 +35,10 @@ export type ViewFn = (props?: RenderProps) => JSX.Element;
 
 type PageAnnotations = {
   [key: string]: "new" | "removed" | undefined;
+};
+
+type PageDismissFunctions = {
+  [key: string]: () => void;
 };
 
 export type PageAnimations = {
@@ -42,6 +55,7 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
   let pages = _.isArray(initialPages) ? initialPages : [initialPages];
   const pageAnnotations = {} as PageAnnotations;
   const pageAnimations = useRef<PageAnimations>({}).current;
+  const pageDismissFunctions = {} as PageDismissFunctions;
 
   const priorPages = priorPagesRef.current;
 
@@ -50,6 +64,10 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
 
   priorPagesRef.current = [];
   const pushPage = (page: JSX.Element) => {
+    if (page.key === undefined || page.key === null) {
+      throw new Error("Undefined or null page key");
+    }
+
     if (!isPriorPage(page)) {
       pageAnnotations[page.key!] = "new";
     }
@@ -61,19 +79,26 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
 
     pages.push(page);
 
-    return {
-      animate: (({
-        incoming = "slideFromRight",
-        outgoing = "slideToRight",
-        speed = "fast",
-      }: PageAnimationSpec) => {
-        pageAnimations[page.key!] = {
-          incoming: _.isArray(incoming) ? incoming : [incoming],
-          outgoing: _.isArray(outgoing) ? outgoing : [outgoing],
-          speed,
-        };
-      }) as PageAnimationSpecFn,
-    };
+    const onDismiss = ((fn) => {
+      pageDismissFunctions[page.key!] = fn;
+    }) as PageDismissalSpecFn;
+
+    const animate = (({
+      incoming = "slideFromRight",
+      outgoing = "slideToRight",
+      speed = "fast",
+    }: PageAnimationSpec) => {
+      pageAnimations[page.key!] = {
+        incoming: _.isArray(incoming) ? incoming : [incoming],
+        outgoing: _.isArray(outgoing) ? outgoing : [outgoing],
+        speed,
+      };
+      return {
+        onDismiss,
+      };
+    }) as PageAnimationSpecFn;
+
+    return { animate, onDismiss };
   };
 
   return [
@@ -88,7 +113,12 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
           return {
             show: () => {
               return {
-                animate: (spec: PageAnimationSpec) => {},
+                animate: (spec: PageAnimationSpec) => {
+                  return {
+                    onDismiss: (onDismissed: () => void) => {},
+                  };
+                },
+                onDismiss: (onDismissed: () => void) => {},
               };
             },
           };
@@ -125,39 +155,48 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
                 zIndex: idx,
                 width,
                 height,
+                backgroundColor: idx > 0 ? "rgba(0,0,0,0.25)" : undefined,
               }}
             >
-              <Page
-                key={`pg-${pg.key}`}
-                width={200}
-                height={200}
-                animation={
-                  pageAnnotations[pg.key!] === "new"
-                    ? pageAnimations[pg.key!].incoming
-                    : pageAnnotations[pg.key!] === "removed"
-                    ? pageAnimations[pg.key!].outgoing
-                    : "none"
-                }
-                animationSpeed={pageAnimations[pg.key!]?.speed}
-                onAnimationFinished={() => {
-                  if (pageAnnotations[pg.key!] !== "removed") {
-                    priorPagesRef.current.push(pg);
-                  } else {
-                    setTimeout(() => {
-                      setExpiredAt(Date.now());
-                    }, 1);
+              <Pressable
+                onPress={() => {
+                  if (pageDismissFunctions[pg.key!]) {
+                    pageDismissFunctions[pg.key!]();
+                    setExpiredAt(Date.now());
                   }
                 }}
+                style={{ width, height }}
               >
-                <View
-                  style={{
-                    width,
-                    height,
+                <Page
+                  key={`pg-${pg.key}`}
+                  animation={
+                    pageAnnotations[pg.key!] === "new"
+                      ? pageAnimations[pg.key!].incoming
+                      : pageAnnotations[pg.key!] === "removed"
+                      ? pageAnimations[pg.key!].outgoing
+                      : "none"
+                  }
+                  animationSpeed={pageAnimations[pg.key!]?.speed}
+                  onAnimationFinished={() => {
+                    if (pageAnnotations[pg.key!] !== "removed") {
+                      priorPagesRef.current.push(pg);
+                    } else {
+                      setTimeout(() => {
+                        setExpiredAt(Date.now());
+                      }, 1);
+                    }
                   }}
                 >
-                  {pg}
-                </View>
-              </Page>
+                  <View
+                    style={{
+                      width,
+                      height,
+                    }}
+                  >
+                    {pg}
+                  </View>
+                </Page>
+              </Pressable>
             </View>
           ))}
         </View>

@@ -5,14 +5,19 @@ export declare type PageAnimationSpec = {
     outgoing?: PageAnimation | PageAnimation[];
     speed?: "fast" | "medium" | "slow";
 };
-export declare type PageAnimationSpecFn = (spec: PageAnimationSpec) => void;
+export declare type PageAnimationSpecFn = (spec: PageAnimationSpec) => {
+    onDismiss: PageDismissalSpecFn;
+};
+export declare type PageDismissalSpecFn = (fn: () => void) => void;
 export declare type PageFlow = {
     show: (page: JSX.Element) => {
         animate: PageAnimationSpecFn;
+        onDismiss: PageDismissalSpecFn;
     };
     when: (predicate: boolean) => {
         show: (page: JSX.Element) => {
             animate: PageAnimationSpecFn;
+            onDismiss: PageDismissalSpecFn;
         };
     };
 };
