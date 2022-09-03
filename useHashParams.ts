@@ -1,6 +1,7 @@
 import { useState } from "react";
 import _ from "lodash";
 import { BigNumber } from "bignumber.js";
+import { Platform } from "react-native";
 
 type GetFn<TParams extends string[]> = (
   name: TParams extends (infer T)[] ? T : string
@@ -70,9 +71,13 @@ function hadParamChange<TParams extends string[]>(
  * @param triggers (Optional) List of hash params the hook needs to respond to (defining this list reduces unnecessary re-renders)
  * @returns an object that exposes a "get" method for retrieving the latest hash values
  */
-export function useUrlParams<T extends string[]>(
+export function useHashParams<T extends string[]>(
   ...triggers: T
 ): { get: GetFn<T> } {
+  if (Platform.OS !== "web") {
+    throw new Error("useHashParams is only supported on web platform");
+  }
+
   const [params, setParams] = useState<{ get: GetFn<T> }>();
   const [wiredUp, setWiredUp] = useState(false);
 
