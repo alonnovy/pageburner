@@ -143,7 +143,9 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
                   if (pageAnnotations[pg.key!] !== "removed") {
                     priorPagesRef.current.push(pg);
                   } else {
-                    setExpiredAt(Date.now());
+                    setTimeout(() => {
+                      setExpiredAt(Date.now());
+                    }, 1);
                   }
                 }}
               >
