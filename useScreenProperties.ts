@@ -20,6 +20,7 @@ export type ScreenProperties = ScaledSize & {
   isTall: boolean;
   isNarrow: boolean;
   isWide: boolean;
+  isLandscapeLayout: boolean;
 };
 
 const defaultScreenPropertyOptions = {
@@ -40,5 +41,6 @@ export function useScreenProperties(options: ScreenPropertyOptions = {}) {
     isTall: windowDimensions.height >= opt.tallHeight!,
     isNarrow: windowDimensions.width <= opt.narrowWidth!,
     isWide: windowDimensions.width >= opt.wideWidth!,
+    isLandscapeLayout: windowDimensions.width >= windowDimensions.height,
   }) as ScreenProperties;
 }

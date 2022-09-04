@@ -14,6 +14,7 @@ export declare type ScreenProperties = ScaledSize & {
     isTall: boolean;
     isNarrow: boolean;
     isWide: boolean;
+    isLandscapeLayout: boolean;
 };
 /** Hook for use in functions that need to be reactive to screen properties (e.g., dimensions, scaling etc)  */
 export declare function useScreenProperties(options?: ScreenPropertyOptions): ScreenProperties;
