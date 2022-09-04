@@ -6,12 +6,11 @@ declare type GetFn<TParams extends string[]> = (name: TParams extends (infer T)[
     toBigNumber: () => BigNumber;
     toDate: () => Date;
 };
+declare type SetFn<TParams extends string[]> = (name: TParams extends (infer T)[] ? T : string, value: any) => void;
 /**
  * Hook for use in code that needs to be reactive to changes in hash params of the url
  * @param triggers (Optional) List of hash params the hook needs to respond to (defining this list reduces unnecessary re-renders)
  * @returns an object that exposes a "get" method for retrieving the latest hash values
  */
-export declare function useHashParams<T extends string[]>(...triggers: T): {
-    get: GetFn<T>;
-};
+export declare function useHashParams<T extends string[]>(...triggers: T): [GetFn<T>, SetFn<T>];
 export {};

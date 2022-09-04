@@ -13,6 +13,11 @@ type GetFn<TParams extends string[]> = (
   toDate: () => Date;
 };
 
+type SetFn<TParams extends string[]> = (
+  name: TParams extends (infer T)[] ? T : string,
+  value: any
+) => void;
+
 function hashToObject(hash: string) {
   let result = {} as any;
   decodeURIComponent(hash)
@@ -29,6 +34,12 @@ function hashToObject(hash: string) {
     });
 
   return result;
+}
+
+function objectToHash<T extends object>(obj: T) {
+  return _.keys(obj)
+    .map((k) => `${k}=${(obj as any)[k].toString()}`)
+    .join("&");
 }
 
 function createGetFunction<TParams extends string[]>(
@@ -73,7 +84,7 @@ function hadParamChange<TParams extends string[]>(
  */
 export function useHashParams<T extends string[]>(
   ...triggers: T
-): { get: GetFn<T> } {
+): [GetFn<T>, SetFn<T>] {
   if (Platform.OS !== "web") {
     throw new Error("useHashParams is only supported on web platform");
   }
@@ -91,9 +102,15 @@ export function useHashParams<T extends string[]>(
     setWiredUp(true);
   }
 
-  return (
-    params || {
-      get: createGetFunction(new URL(window.location.href), triggers),
-    }
-  );
+  const getFn =
+    params?.get || createGetFunction(new URL(window.location.href), triggers);
+
+  const setFn: SetFn<T> = (name, value) => {
+    const url = new URL(window.location.href);
+    const hashObject = hashToObject(url.hash);
+    hashObject[name] = value;
+    window.location.hash = objectToHash(hashObject);
+  };
+
+  return [getFn, setFn];
 }
