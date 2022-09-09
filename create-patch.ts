@@ -2,45 +2,26 @@ import { ImageStyle, TextStyle, ViewStyle } from "react-native";
 import { Patch } from "./patch";
 import * as _ from "lodash";
 
-function resolveOverrides<TStyle extends ViewStyle | TextStyle | ImageStyle>(
-  styleDefault: TStyle,
-  overrides: TStyle
-) {
-  const result = _.omit(styleDefault, ["_overrides"]);
-  return Object.assign(result, overrides);
-}
-
+/**
+ * Prepares a patch or skin for use in UI styling by evaluating the overrides.
+ * @param target
+ * @returns a ready-to-use patch with all overrides fully defined
+ */
 export function createPatch<
-  TOverrides extends string | void,
-  TPatch extends Patch<TOverrides> & { [key: string]: any }
->(target: TPatch) {
+  TPatch extends Patch<any> & { [key: string]: Patch<any> | any }
+>(target: TPatch): TPatch {
   let result = _.clone(target);
 
   if (result.image) {
-    for (let k in result.image!._overrides) {
-      result.image!._overrides[k] = resolveOverrides(
-        result.image!,
-        result.image!._overrides[k]!
-      ) as any;
-    }
+    resolveStyle(result.image);
   }
 
   if (result.text) {
-    for (let k in result.text!._overrides) {
-      result.text!._overrides[k] = resolveOverrides(
-        result.text!,
-        result.text!._overrides[k]!
-      ) as any;
-    }
+    resolveStyle(result.text);
   }
 
   if (result.view) {
-    for (let k in result.view!._overrides) {
-      result.view!._overrides[k] = resolveOverrides(
-        result.view!,
-        result.view!._overrides[k]!
-      ) as any;
-    }
+    resolveStyle(result.view);
   }
 
   const customKeys = _.keys(result).filter(
@@ -48,8 +29,42 @@ export function createPatch<
   ) as (keyof TPatch)[];
 
   customKeys.forEach((k) => {
-    result[k] = createPatch(result[k]);
+    (result as any)[k] = createPatch((result as any)[k]);
   });
 
   return result;
+}
+
+function resolveStyle<
+  TStyle extends (ViewStyle | TextStyle | ImageStyle) & { _overrides?: any }
+>(style: TStyle) {
+  for (let k in style._overrides) {
+    style._overrides[k] = resolveOverrides(style, style._overrides[k]!);
+  }
+
+  if (style._overrides) {
+    style._overrides!.merge = (...names: string[]) => {
+      return resolveOverrides(
+        style,
+        names.map((n) => style._overrides![n]!)
+      );
+    };
+  }
+}
+
+function resolveOverrides<TStyle extends ViewStyle | TextStyle | ImageStyle>(
+  styleDefault: TStyle,
+  overrides: TStyle[]
+) {
+  const result = _.omit(styleDefault, ["_overrides"]);
+
+  if (overrides === undefined) {
+    return result;
+  }
+
+  if (_.isArray(overrides)) {
+    return Object.assign(result, ...overrides);
+  }
+
+  return Object.assign(result, overrides);
 }
