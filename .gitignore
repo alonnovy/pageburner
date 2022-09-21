@@ -1,4 +1,7 @@
 node_modules
 *.lock
+./*.js
+./*.jsx
+!./*.config.js
 dist/*.jsx
 yarn-error.log

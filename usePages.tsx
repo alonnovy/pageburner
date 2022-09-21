@@ -4,7 +4,7 @@ import _ from "lodash";
 import { useRef } from "react";
 import { PageAnimation } from "./types";
 import { Page } from "./page";
-import { View, Text, Pressable } from "react-native";
+import { View, Text } from "react-native";
 
 export type PageAnimationSpec = {
   incoming?: PageAnimation | PageAnimation[];
@@ -157,46 +157,42 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
                 height,
                 backgroundColor: idx > 0 ? "rgba(0,0,0,0.25)" : undefined,
               }}
+              onTouchEnd={() => {
+                if (pageDismissFunctions[pg.key!]) {
+                  pageDismissFunctions[pg.key!]();
+                  setExpiredAt(Date.now());
+                }
+              }}
             >
-              <Pressable
-                onPress={() => {
-                  if (pageDismissFunctions[pg.key!]) {
-                    pageDismissFunctions[pg.key!]();
-                    setExpiredAt(Date.now());
+              <Page
+                key={`pg-${pg.key}`}
+                animation={
+                  pageAnnotations[pg.key!] === "new"
+                    ? pageAnimations[pg.key!].incoming
+                    : pageAnnotations[pg.key!] === "removed"
+                    ? pageAnimations[pg.key!].outgoing
+                    : "none"
+                }
+                animationSpeed={pageAnimations[pg.key!]?.speed}
+                onAnimationFinished={() => {
+                  if (pageAnnotations[pg.key!] !== "removed") {
+                    priorPagesRef.current.push(pg);
+                  } else {
+                    setTimeout(() => {
+                      setExpiredAt(Date.now());
+                    }, 1);
                   }
                 }}
-                style={{ width, height }}
               >
-                <Page
-                  key={`pg-${pg.key}`}
-                  animation={
-                    pageAnnotations[pg.key!] === "new"
-                      ? pageAnimations[pg.key!].incoming
-                      : pageAnnotations[pg.key!] === "removed"
-                      ? pageAnimations[pg.key!].outgoing
-                      : "none"
-                  }
-                  animationSpeed={pageAnimations[pg.key!]?.speed}
-                  onAnimationFinished={() => {
-                    if (pageAnnotations[pg.key!] !== "removed") {
-                      priorPagesRef.current.push(pg);
-                    } else {
-                      setTimeout(() => {
-                        setExpiredAt(Date.now());
-                      }, 1);
-                    }
+                <View
+                  style={{
+                    width,
+                    height,
                   }}
                 >
-                  <View
-                    style={{
-                      width,
-                      height,
-                    }}
-                  >
-                    {pg}
-                  </View>
-                </Page>
-              </Pressable>
+                  {pg}
+                </View>
+              </Page>
             </View>
           ))}
         </View>
