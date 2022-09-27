@@ -37,7 +37,11 @@ export type PageFlow = {
   };
 };
 
-export type ViewFn = () => JSX.Element;
+type RenderProps = {
+  zIndex?: number;
+};
+
+export type RenderFn = (props?: RenderProps) => JSX.Element;
 
 type PageAnnotations = {
   [key: string]: "new" | "removed" | undefined;
@@ -167,7 +171,7 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
                     zIndex: idx,
                     width: "100%",
                     height: "100%",
-                    backgroundColor: idx > 0 ? "rgba(0,0,0,0.5)" : undefined,
+                    backgroundColor: idx > 0 ? "rgba(0,0,0,0.4)" : undefined,
                   }}
                 >
                   <Page
@@ -217,5 +221,5 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
         </>
       );
     },
-  ] as [PageFlow, ViewFn];
+  ] as [PageFlow, RenderFn];
 }

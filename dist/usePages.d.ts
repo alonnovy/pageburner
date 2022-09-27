@@ -21,8 +21,12 @@ export declare type PageFlow = {
         };
     };
 };
-export declare type ViewFn = () => JSX.Element;
+declare type RenderProps = {
+    zIndex?: number;
+};
+export declare type RenderFn = (props?: RenderProps) => JSX.Element;
 export declare type PageAnimations = {
     [key: string]: PageAnimationSpec;
 };
-export declare function usePages(initialPages?: JSX.Element | JSX.Element[]): [PageFlow, ViewFn];
+export declare function usePages(initialPages?: JSX.Element | JSX.Element[]): [PageFlow, RenderFn];
+export {};
