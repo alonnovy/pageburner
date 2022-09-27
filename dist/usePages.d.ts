@@ -10,23 +10,19 @@ export declare type PageAnimationSpecFn = (spec: PageAnimationSpec) => {
 };
 export declare type PageDismissalSpecFn = (fn: () => void) => void;
 export declare type PageFlow = {
-    show: (page: JSX.Element) => {
+    show: (page: JSX.Element, background?: JSX.Element) => {
         animate: PageAnimationSpecFn;
         onDismiss: PageDismissalSpecFn;
     };
     when: (predicate: boolean) => {
-        show: (page: JSX.Element) => {
+        show: (page: JSX.Element, background?: JSX.Element) => {
             animate: PageAnimationSpecFn;
             onDismiss: PageDismissalSpecFn;
         };
     };
 };
-export declare type ViewFn = (props?: RenderProps) => JSX.Element;
+export declare type ViewFn = () => JSX.Element;
 export declare type PageAnimations = {
     [key: string]: PageAnimationSpec;
-};
-export declare type RenderProps = {
-    width?: number | string;
-    height?: number | string;
 };
 export declare function usePages(initialPages?: JSX.Element | JSX.Element[]): [PageFlow, ViewFn];

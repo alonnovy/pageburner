@@ -18,20 +18,26 @@ export type PageAnimationSpecFn = (spec: PageAnimationSpec) => {
 export type PageDismissalSpecFn = (fn: () => void) => void;
 
 export type PageFlow = {
-  show: (page: JSX.Element) => {
+  show: (
+    page: JSX.Element,
+    background?: JSX.Element
+  ) => {
     animate: PageAnimationSpecFn;
     onDismiss: PageDismissalSpecFn;
   };
 
   when: (predicate: boolean) => {
-    show: (page: JSX.Element) => {
+    show: (
+      page: JSX.Element,
+      background?: JSX.Element
+    ) => {
       animate: PageAnimationSpecFn;
       onDismiss: PageDismissalSpecFn;
     };
   };
 };
 
-export type ViewFn = (props?: RenderProps) => JSX.Element;
+export type ViewFn = () => JSX.Element;
 
 type PageAnnotations = {
   [key: string]: "new" | "removed" | undefined;
@@ -44,8 +50,6 @@ type PageDismissFunctions = {
 export type PageAnimations = {
   [key: string]: PageAnimationSpec;
 };
-
-export type RenderProps = { width?: number | string; height?: number | string };
 
 export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
   let priorPagesRef = useRef<JSX.Element[]>(
@@ -63,7 +67,7 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
     !!priorPages.find((p) => p.key === page.key);
 
   priorPagesRef.current = [];
-  const pushPage = (page: JSX.Element) => {
+  const pushPage = (page: JSX.Element, background?: JSX.Element) => {
     if (page.key === undefined || page.key === null) {
       throw new Error("Undefined or null page key");
     }
@@ -77,6 +81,9 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
       speed: "fast",
     };
 
+    if (!!background) {
+      pages.push(background);
+    }
     pages.push(page);
 
     const onDismiss = ((fn) => {
@@ -125,9 +132,7 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
         }
       },
     } as PageFlow,
-    (
-      { width = "100%", height = "100%" } = { width: "100%", height: "100%" }
-    ) => {
+    () => {
       const removedPages = priorPages.filter(
         (prior) => !pages.find((current) => current.key === prior.key)
       );
@@ -138,64 +143,70 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
       pages = _.unionWith(pages, removedPages, (p1, p2) => p1.key === p2.key);
 
       return (
-        <View
-          key={"flow-container"}
-          style={{
-            overflow: "hidden",
-            width,
-            height,
-          }}
-        >
-          <Text></Text>
-          {pages.map((pg, idx) => (
+        <>
+          {!!pages.length && (
             <View
-              key={`pg-background-${pg.key}`}
+              key={"flow-container"}
               style={{
+                overflow: "hidden",
                 position: "absolute",
-                zIndex: idx,
-                width,
-                height,
-                backgroundColor: idx > 0 ? "rgba(0,0,0,0.25)" : undefined,
-              }}
-              onTouchEnd={() => {
-                if (pageDismissFunctions[pg.key!]) {
-                  pageDismissFunctions[pg.key!]();
-                  setExpiredAt(Date.now());
-                }
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
               }}
             >
-              <Page
-                key={`pg-${pg.key}`}
-                animation={
-                  pageAnnotations[pg.key!] === "new"
-                    ? pageAnimations[pg.key!].incoming
-                    : pageAnnotations[pg.key!] === "removed"
-                    ? pageAnimations[pg.key!].outgoing
-                    : "none"
-                }
-                animationSpeed={pageAnimations[pg.key!]?.speed}
-                onAnimationFinished={() => {
-                  if (pageAnnotations[pg.key!] !== "removed") {
-                    priorPagesRef.current.push(pg);
-                  } else {
-                    setTimeout(() => {
-                      setExpiredAt(Date.now());
-                    }, 1);
-                  }
-                }}
-              >
+              {pages.map((pg, idx) => (
                 <View
+                  key={`pg-background-${pg.key}`}
                   style={{
-                    width,
-                    height,
+                    position: "absolute",
+                    zIndex: idx,
+                    width: "100%",
+                    height: "100%",
+                    backgroundColor: idx > 0 ? "rgba(0,0,0,0.25)" : undefined,
+                  }}
+                  onTouchEnd={() => {
+                    if (pageDismissFunctions[pg.key!]) {
+                      pageDismissFunctions[pg.key!]();
+                      setExpiredAt(Date.now());
+                    }
                   }}
                 >
-                  {pg}
+                  <Page
+                    key={`pg-${pg.key}`}
+                    animation={
+                      pageAnnotations[pg.key!] === "new"
+                        ? pageAnimations[pg.key!].incoming
+                        : pageAnnotations[pg.key!] === "removed"
+                        ? pageAnimations[pg.key!].outgoing
+                        : "none"
+                    }
+                    animationSpeed={pageAnimations[pg.key!]?.speed}
+                    onAnimationFinished={() => {
+                      if (pageAnnotations[pg.key!] !== "removed") {
+                        priorPagesRef.current.push(pg);
+                      } else {
+                        setTimeout(() => {
+                          setExpiredAt(Date.now());
+                        }, 1);
+                      }
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                      }}
+                    >
+                      {pg}
+                    </View>
+                  </Page>
                 </View>
-              </Page>
+              ))}
             </View>
-          ))}
-        </View>
+          )}
+        </>
       );
     },
   ] as [PageFlow, ViewFn];
