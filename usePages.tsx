@@ -4,7 +4,7 @@ import _ from "lodash";
 import { useRef } from "react";
 import { PageAnimation } from "./types";
 import { Page } from "./page";
-import { View, Text } from "react-native";
+import { View, Text, Pressable } from "react-native";
 
 export type PageAnimationSpec = {
   incoming?: PageAnimation | PageAnimation[];
@@ -67,6 +67,7 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
     !!priorPages.find((p) => p.key === page.key);
 
   priorPagesRef.current = [];
+
   const pushPage = (page: JSX.Element, background?: JSX.Element) => {
     if (page.key === undefined || page.key === null) {
       throw new Error("Undefined or null page key");
@@ -81,9 +82,7 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
       speed: "fast",
     };
 
-    if (!!background) {
-      pages.push(background);
-    }
+    !!background && pages.push(background);
     pages.push(page);
 
     const onDismiss = ((fn) => {
@@ -109,6 +108,7 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
   };
 
   return [
+    /** pages */
     {
       show: pushPage,
       when: (predicate) => {
@@ -132,7 +132,9 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
         }
       },
     } as PageFlow,
-    () => {
+
+    /** render */
+    ({ zIndex }: { zIndex?: number } = {}) => {
       const removedPages = priorPages.filter(
         (prior) => !pages.find((current) => current.key === prior.key)
       );
@@ -154,6 +156,7 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
                 left: 0,
                 right: 0,
                 bottom: 0,
+                zIndex,
               }}
             >
               {pages.map((pg, idx) => (
@@ -164,22 +167,16 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
                     zIndex: idx,
                     width: "100%",
                     height: "100%",
-                    backgroundColor: idx > 0 ? "rgba(0,0,0,0.25)" : undefined,
-                  }}
-                  onTouchEnd={() => {
-                    if (pageDismissFunctions[pg.key!]) {
-                      pageDismissFunctions[pg.key!]();
-                      setExpiredAt(Date.now());
-                    }
+                    backgroundColor: idx > 0 ? "rgba(0,0,0,0.5)" : undefined,
                   }}
                 >
                   <Page
                     key={`pg-${pg.key}`}
                     animation={
                       pageAnnotations[pg.key!] === "new"
-                        ? pageAnimations[pg.key!].incoming
+                        ? pageAnimations[pg.key!]?.incoming
                         : pageAnnotations[pg.key!] === "removed"
-                        ? pageAnimations[pg.key!].outgoing
+                        ? pageAnimations[pg.key!]?.outgoing
                         : "none"
                     }
                     animationSpeed={pageAnimations[pg.key!]?.speed}
@@ -193,14 +190,25 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
                       }
                     }}
                   >
-                    <View
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                      }}
-                    >
+                    <>
+                      <Pressable
+                        key={`pg-dismiss-${idx}`}
+                        onPress={(ev) => {
+                          if (pageDismissFunctions[pg.key!]) {
+                            pageDismissFunctions[pg.key!]();
+                            setExpiredAt(Date.now());
+                          }
+                        }}
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                        }}
+                      />
                       {pg}
-                    </View>
+                    </>
                   </Page>
                 </View>
               ))}
