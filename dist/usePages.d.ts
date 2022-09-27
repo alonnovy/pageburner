@@ -10,12 +10,16 @@ export declare type PageAnimationSpecFn = (spec: PageAnimationSpec) => {
 };
 export declare type PageDismissalSpecFn = (fn: () => void) => void;
 export declare type PageFlow = {
-    show: (page: JSX.Element, background?: JSX.Element) => {
+    show: (page: JSX.Element, options?: {
+        background?: JSX.Element;
+    }) => {
         animate: PageAnimationSpecFn;
         onDismiss: PageDismissalSpecFn;
     };
     when: (predicate: boolean) => {
-        show: (page: JSX.Element, background?: JSX.Element) => {
+        show: (page: JSX.Element, options?: {
+            background?: JSX.Element;
+        }) => {
             animate: PageAnimationSpecFn;
             onDismiss: PageDismissalSpecFn;
         };

@@ -20,7 +20,7 @@ export type PageDismissalSpecFn = (fn: () => void) => void;
 export type PageFlow = {
   show: (
     page: JSX.Element,
-    background?: JSX.Element
+    options?: { background?: JSX.Element }
   ) => {
     animate: PageAnimationSpecFn;
     onDismiss: PageDismissalSpecFn;
@@ -29,7 +29,7 @@ export type PageFlow = {
   when: (predicate: boolean) => {
     show: (
       page: JSX.Element,
-      background?: JSX.Element
+      options?: { background?: JSX.Element }
     ) => {
       animate: PageAnimationSpecFn;
       onDismiss: PageDismissalSpecFn;
@@ -72,7 +72,10 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
 
   priorPagesRef.current = [];
 
-  const pushPage = (page: JSX.Element, background?: JSX.Element) => {
+  const pushPage = (
+    page: JSX.Element,
+    options?: { background?: JSX.Element }
+  ) => {
     if (page.key === undefined || page.key === null) {
       throw new Error("Undefined or null page key");
     }
@@ -86,7 +89,7 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
       speed: "fast",
     };
 
-    !!background && pages.push(background);
+    !!options?.background && pages.push(options?.background);
     pages.push(page);
 
     const onDismiss = ((fn) => {
