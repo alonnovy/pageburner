@@ -10,8 +10,7 @@ export declare type PageAnimationSpecFn = (spec: PageAnimationSpec) => {
 };
 export declare type PageDismissalSpecFn = (fn: () => void) => void;
 export declare type ShowOptions = {
-    background?: JSX.Element;
-    defaultBackgroundColor?: string;
+    background?: JSX.Element | null;
 };
 export declare type PageFlow = {
     show: (page: JSX.Element, options?: ShowOptions) => {
@@ -32,5 +31,6 @@ export declare type RenderFn = (props?: RenderProps) => JSX.Element;
 export declare type PageAnimations = {
     [key: string]: PageAnimationSpec;
 };
+export declare const DefaultBackground: JSX.Element;
 export declare function usePages(initialPages?: JSX.Element | JSX.Element[]): [PageFlow, RenderFn];
 export {};

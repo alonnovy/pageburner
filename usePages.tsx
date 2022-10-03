@@ -1,10 +1,10 @@
-import React, { useInsertionEffect, useLayoutEffect } from "react";
+import React from "react";
 import { useState } from "react";
 import _ from "lodash";
 import { useRef } from "react";
 import { PageAnimation } from "./types";
 import { Page } from "./page";
-import { View, Text, Pressable } from "react-native";
+import { View, Pressable } from "react-native";
 
 export type PageAnimationSpec = {
   incoming?: PageAnimation | PageAnimation[];
@@ -18,8 +18,7 @@ export type PageAnimationSpecFn = (spec: PageAnimationSpec) => {
 export type PageDismissalSpecFn = (fn: () => void) => void;
 
 export type ShowOptions = {
-  background?: JSX.Element;
-  defaultBackgroundColor?: string;
+  background?: JSX.Element | null;
 };
 
 export type PageFlow = {
@@ -64,14 +63,21 @@ type PageOptions = {
   [key: string]: ShowOptions;
 };
 
+export const DefaultBackground = (
+  <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.35)" }}></View>
+);
+
 export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
-  let priorPagesRef = useRef<JSX.Element[]>(
-    _.isArray(initialPages) ? initialPages : [initialPages]
-  );
+  const initialPagesArray = _.isArray(initialPages)
+    ? initialPages
+    : [initialPages];
+
+  let pages = initialPagesArray;
+
+  let priorPagesRef = useRef<JSX.Element[]>(initialPagesArray);
   let [, setExpiredAt] = useState(0);
-  let pages = _.isArray(initialPages) ? initialPages : [initialPages];
-  const pageAnnotations = {} as PageAnnotations;
   const pageAnimations = useRef<PageAnimations>({}).current;
+  const pageAnnotations = {} as PageAnnotations;
   const pageDismissFunctions = {} as PageDismissFunctions;
   const pageOptions = {} as PageOptions;
 
@@ -182,11 +188,6 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
                     zIndex: idx,
                     width: "100%",
                     height: "100%",
-                    backgroundColor:
-                      idx === 0 ||
-                      pageOptions[pg.key || ""]?.background !== undefined
-                        ? "transparent"
-                        : "rgba(0,0,0,0.4)",
                   }}
                 >
                   <Page
