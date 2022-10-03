@@ -182,7 +182,7 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
                     zIndex: idx,
                     width: "100%",
                     height: "100%",
-                    backgroundColor: !!pageOptions[pg.key!].background
+                    backgroundColor: !!pageOptions[pg.key || ""]?.background
                       ? "transparent"
                       : "rgba(0,0,0,0.4)",
                   }}
