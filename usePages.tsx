@@ -17,10 +17,15 @@ export type PageAnimationSpecFn = (spec: PageAnimationSpec) => {
 };
 export type PageDismissalSpecFn = (fn: () => void) => void;
 
+export type ShowOptions = {
+  background?: JSX.Element;
+  defaultBackgroundColor?: string;
+};
+
 export type PageFlow = {
   show: (
     page: JSX.Element,
-    options?: { background?: JSX.Element }
+    options?: ShowOptions
   ) => {
     animate: PageAnimationSpecFn;
     onDismiss: PageDismissalSpecFn;
@@ -29,7 +34,7 @@ export type PageFlow = {
   when: (predicate: boolean) => {
     show: (
       page: JSX.Element,
-      options?: { background?: JSX.Element }
+      options?: ShowOptions
     ) => {
       animate: PageAnimationSpecFn;
       onDismiss: PageDismissalSpecFn;
@@ -55,6 +60,10 @@ export type PageAnimations = {
   [key: string]: PageAnimationSpec;
 };
 
+type PageOptions = {
+  [key: string]: ShowOptions;
+};
+
 export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
   let priorPagesRef = useRef<JSX.Element[]>(
     _.isArray(initialPages) ? initialPages : [initialPages]
@@ -64,6 +73,7 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
   const pageAnnotations = {} as PageAnnotations;
   const pageAnimations = useRef<PageAnimations>({}).current;
   const pageDismissFunctions = {} as PageDismissFunctions;
+  const pageOptions = {} as PageOptions;
 
   const priorPages = priorPagesRef.current;
 
@@ -72,10 +82,7 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
 
   priorPagesRef.current = [];
 
-  const pushPage = (
-    page: JSX.Element,
-    options?: { background?: JSX.Element }
-  ) => {
+  const pushPage = (page: JSX.Element, options?: ShowOptions) => {
     if (page.key === undefined || page.key === null) {
       throw new Error("Undefined or null page key");
     }
@@ -88,6 +95,7 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
       outgoing: ["slideToRight"],
       speed: "fast",
     };
+    pageOptions[page.key!] = options || {};
 
     !!options?.background && pages.push(options?.background);
     pages.push(page);
@@ -174,7 +182,9 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
                     zIndex: idx,
                     width: "100%",
                     height: "100%",
-                    backgroundColor: "rgba(0,0,0,0.4)",
+                    backgroundColor: !!pageOptions[pg.key!].background
+                      ? "transparent"
+                      : "rgba(0,0,0,0.4)",
                   }}
                 >
                   <Page
