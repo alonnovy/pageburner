@@ -13,12 +13,12 @@ export declare type ShowOptions = {
     background?: JSX.Element | null;
 };
 export declare type PageFlow = {
-    show: (page: JSX.Element, options?: ShowOptions) => {
+    show: (page: JSX.Element | (() => JSX.Element), options?: ShowOptions) => {
         animate: PageAnimationSpecFn;
         onDismiss: PageDismissalSpecFn;
     };
     when: (predicate: boolean) => {
-        show: (page: JSX.Element, options?: ShowOptions) => {
+        show: (page: JSX.Element | (() => JSX.Element), options?: ShowOptions) => {
             animate: PageAnimationSpecFn;
             onDismiss: PageDismissalSpecFn;
         };

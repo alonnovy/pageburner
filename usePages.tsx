@@ -23,7 +23,7 @@ export type ShowOptions = {
 
 export type PageFlow = {
   show: (
-    page: JSX.Element,
+    page: JSX.Element | (() => JSX.Element),
     options?: ShowOptions
   ) => {
     animate: PageAnimationSpecFn;
@@ -32,7 +32,7 @@ export type PageFlow = {
 
   when: (predicate: boolean) => {
     show: (
-      page: JSX.Element,
+      page: JSX.Element | (() => JSX.Element),
       options?: ShowOptions
     ) => {
       animate: PageAnimationSpecFn;
@@ -88,7 +88,12 @@ export function usePages(initialPages: JSX.Element | JSX.Element[] = []) {
 
   priorPagesRef.current = [];
 
-  const pushPage = (page: JSX.Element, options?: ShowOptions) => {
+  const pushPage = (
+    pg: JSX.Element | (() => JSX.Element),
+    options?: ShowOptions
+  ) => {
+    const page = typeof pg === "function" ? pg() : pg;
+
     if (page.key === undefined || page.key === null) {
       throw new Error("Undefined or null page key");
     }
