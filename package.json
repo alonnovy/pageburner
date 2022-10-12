@@ -1,6 +1,6 @@
 {
   "name": "pageburner",
-  "version": "0.1.20",
+  "version": "0.1.21",
   "description": "Super-simple, powerful, declarative ui navigation and presentation library for react native",
   "keywords": [
     "react-native",
@@ -9,7 +9,8 @@
     "web"
   ],
   "author": {
-    "name": "Alon Novy"
+    "name": "Alon Novy",
+    "email": "alon.novy@yourportfolio.com"
   },
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -38,5 +39,5 @@
     "babel-preset-expo": "^9.2.0",
     "typescript": "^4.6.3"
   },
-  "private": true
+  "license": "MIT"
 }
