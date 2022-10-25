@@ -3,7 +3,9 @@ export type Widget<TProps extends any | void = {}> = (
 ) => JSX.Element | null;
 
 export type ParentWidget<TProps extends any | void = {}> = (
-  props: TProps & { children?: JSX.Element | JSX.Element[] }
+  props: TProps & {
+    children?: React.ReactNode;
+  }
 ) => JSX.Element | null;
 
 export type PageAnimation =
