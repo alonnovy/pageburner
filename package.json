@@ -1,6 +1,6 @@
 {
   "name": "pageburner",
-  "version": "0.1.23",
+  "version": "0.1.24",
   "description": "Super-simple, powerful, declarative ui navigation and presentation library for react native",
   "keywords": [
     "react-native",

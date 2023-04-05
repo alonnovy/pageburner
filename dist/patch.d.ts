@@ -28,7 +28,7 @@ declare type ImagePatch<TOverrides extends string | void = void> = ImageStyle & 
         merge?: (...names: TOverrides[]) => ImageStyle;
     };
 };
-export declare type RuntimePatch<TPatch extends Patch<any>> = {
+export declare type RuntimePatch<TPatch extends Patch<any> | any> = {
     view: (...overrides: (TPatch extends Patch<infer T> ? T : void)[]) => ViewStyle;
     text: (...overrides: (TPatch extends Patch<infer T> ? T : void)[]) => TextStyle;
     image: (...overrides: (TPatch extends Patch<infer T> ? T : void)[]) => ImageStyle;
