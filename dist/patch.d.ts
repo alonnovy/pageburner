@@ -28,7 +28,7 @@ declare type ImagePatch<TOverrides extends string | void = void> = ImageStyle & 
         merge?: (...names: TOverrides[]) => ImageStyle;
     };
 };
-declare type StyleMethod<TStyle extends ViewStyle | TextStyle | ImageStyle, TPatch extends Patch<any> | any | void = void> = TPatch extends Patch<string> ? (...overrides: (TPatch extends Patch<infer T> ? T : void)[]) => TStyle : () => TStyle;
+declare type StyleMethod<TStyle extends ViewStyle | TextStyle | ImageStyle, TPatch extends Patch<any> | any | void = void> = TPatch extends Patch<any> ? (...overrides: (TPatch extends Patch<infer T> ? T : void)[]) => TStyle : () => TStyle;
 export declare type RuntimePatch<TPatch extends Patch<any> | any | void = void> = {
     view: StyleMethod<ViewStyle, TPatch>;
     text: StyleMethod<TextStyle, TPatch>;

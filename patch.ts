@@ -36,7 +36,7 @@ type ImagePatch<TOverrides extends string | void = void> = ImageStyle & {
 type StyleMethod<
   TStyle extends ViewStyle | TextStyle | ImageStyle,
   TPatch extends Patch<any> | any | void = void
-> = TPatch extends Patch<string>
+> = TPatch extends Patch<any>
   ? (...overrides: (TPatch extends Patch<infer T> ? T : void)[]) => TStyle
   : () => TStyle;
 
