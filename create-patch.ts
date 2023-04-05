@@ -1,6 +1,12 @@
 import { ImageStyle, TextStyle, ViewStyle } from "react-native";
-import { Patch } from "./patch";
+import { Patch, RuntimePatch } from "./patch";
 import * as _ from "lodash";
+
+type RecursivePatch<TPatch> = TPatch extends Patch<any>
+  ? RuntimePatch<TPatch>
+  : {
+      [name in keyof TPatch]: RecursivePatch<TPatch[name]>;
+    };
 
 /**
  * Prepares a patch or skin for use in UI styling by evaluating the overrides.
@@ -9,62 +15,46 @@ import * as _ from "lodash";
  */
 export function createPatch<
   TPatch extends Patch<any> & { [key: string]: Patch<any> | any }
->(target: TPatch): TPatch {
-  let result = _.clone(target);
+>(target: TPatch) {
+  const result: RuntimePatch<TPatch extends Patch<infer T> ? T : void> = {
+    text: (...overrides) => {
+      const result = _.omit(target.text, "_overrides") || {};
+      if (target.text?._overrides && overrides.length) {
+        overrides.forEach((o: any) =>
+          Object.assign(result, target.text!._overrides![o])
+        );
+      }
+      return result as TextStyle;
+    },
+    view: (...overrides) => {
+      const result = _.omit(target.view, "_overrides") || {};
+      if (target.view?._overrides && overrides.length) {
+        overrides.forEach((o: any) =>
+          Object.assign(result, target.view!._overrides![o])
+        );
+      }
+      return result as ViewStyle;
+    },
+    image: (...overrides) => {
+      const result = _.omit(target.image, "_overrides") || {};
+      if (target.image?._overrides && overrides.length) {
+        overrides.forEach((o: any) =>
+          Object.assign(result, target.image!._overrides![o])
+        );
+      }
+      return result as ImageStyle;
+    },
+  };
 
-  if (result.image) {
-    resolveStyle(result.image);
-  }
-
-  if (result.text) {
-    resolveStyle(result.text);
-  }
-
-  if (result.view) {
-    resolveStyle(result.view);
-  }
-
-  const customKeys = _.keys(result).filter(
+  const customKeys = _.keys(target).filter(
     (k) => !_.includes(["view", "text", "image"], k)
   ) as (keyof TPatch)[];
 
   customKeys.forEach((k) => {
-    (result as any)[k] = createPatch((result as any)[k]);
+    if (k !== "_overrides") {
+      (result as any)[k] = createPatch((target as any)[k]);
+    }
   });
 
-  return result;
-}
-
-function resolveStyle<
-  TStyle extends (ViewStyle | TextStyle | ImageStyle) & { _overrides?: any }
->(style: TStyle) {
-  for (let k in style._overrides) {
-    style._overrides[k] = resolveOverrides(style, style._overrides[k]!);
-  }
-
-  if (style._overrides) {
-    style._overrides!.merge = (...names: string[]) => {
-      return resolveOverrides(
-        style,
-        names.map((n) => style._overrides![n]!)
-      );
-    };
-  }
-}
-
-function resolveOverrides<TStyle extends ViewStyle | TextStyle | ImageStyle>(
-  styleDefault: TStyle,
-  overrides: TStyle[]
-) {
-  const result = _.omit(styleDefault, ["_overrides"]);
-
-  if (overrides === undefined) {
-    return result;
-  }
-
-  if (_.isArray(overrides)) {
-    return Object.assign(result, ...overrides);
-  }
-
-  return Object.assign(result, overrides);
+  return result as RuntimePatch<TPatch> & RecursivePatch<TPatch>;
 }

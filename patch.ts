@@ -1,4 +1,3 @@
-import { bindAll } from "lodash";
 import { ImageStyle, TextStyle, ViewStyle } from "react-native";
 
 export type Patch<TOverrides extends string | void = void> = {
@@ -32,4 +31,16 @@ type ImagePatch<TOverrides extends string | void = void> = ImageStyle & {
     /** Overriding occurs in the order specified, that is, in case styles conflict, later styles override earlier styles. */
     merge?: (...names: TOverrides[]) => ImageStyle;
   };
+};
+
+export type RuntimePatch<TPatch extends Patch<any>> = {
+  view: (
+    ...overrides: (TPatch extends Patch<infer T> ? T : void)[]
+  ) => ViewStyle;
+  text: (
+    ...overrides: (TPatch extends Patch<infer T> ? T : void)[]
+  ) => TextStyle;
+  image: (
+    ...overrides: (TPatch extends Patch<infer T> ? T : void)[]
+  ) => ImageStyle;
 };
