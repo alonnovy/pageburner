@@ -1,7 +1,4 @@
 import { Patch, RuntimePatch } from "./patch";
-declare type RecursivePatch<TPatch> = TPatch extends Patch<any> ? RuntimePatch<TPatch> : {
-    [name in keyof TPatch]: RecursivePatch<TPatch[name]>;
-};
 /**
  * Prepares a patch or skin for use in UI styling by evaluating the overrides.
  * @param target
@@ -9,5 +6,4 @@ declare type RecursivePatch<TPatch> = TPatch extends Patch<any> ? RuntimePatch<T
  */
 export declare function createPatch<TPatch extends Patch<any> & {
     [key: string]: Patch<any> | any;
-}>(target: TPatch): RuntimePatch<TPatch> & RecursivePatch<TPatch>;
-export {};
+}>(target: TPatch): RuntimePatch<TPatch>;

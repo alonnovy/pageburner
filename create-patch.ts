@@ -2,12 +2,6 @@ import { ImageStyle, TextStyle, ViewStyle } from "react-native";
 import { Patch, RuntimePatch } from "./patch";
 import * as _ from "lodash";
 
-type RecursivePatch<TPatch> = TPatch extends Patch<any>
-  ? RuntimePatch<TPatch>
-  : {
-      [name in keyof TPatch]: RecursivePatch<TPatch[name]>;
-    };
-
 /**
  * Prepares a patch or skin for use in UI styling by evaluating the overrides.
  * @param target
@@ -16,7 +10,7 @@ type RecursivePatch<TPatch> = TPatch extends Patch<any>
 export function createPatch<
   TPatch extends Patch<any> & { [key: string]: Patch<any> | any }
 >(target: TPatch) {
-  const result: RuntimePatch<TPatch extends Patch<infer T> ? T : void> = {
+  const result = {
     text: (...overrides) => {
       const result = _.omit(target.text, "_overrides") || {};
       if (target.text?._overrides && overrides.length) {
@@ -44,7 +38,7 @@ export function createPatch<
       }
       return result as ImageStyle;
     },
-  };
+  } as RuntimePatch<TPatch extends Patch<infer T> ? T : void>;
 
   const customKeys = _.keys(target).filter(
     (k) => !_.includes(["view", "text", "image"], k)
@@ -56,5 +50,5 @@ export function createPatch<
     }
   });
 
-  return result as RuntimePatch<TPatch> & RecursivePatch<TPatch>;
+  return result as RuntimePatch<TPatch>;
 }

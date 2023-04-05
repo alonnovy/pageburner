@@ -33,7 +33,7 @@ type ImagePatch<TOverrides extends string | void = void> = ImageStyle & {
   };
 };
 
-export type RuntimePatch<TPatch extends Patch<any> | any> = {
+export type RuntimePatch<TPatch extends Patch<any> | any | void = void> = {
   view: (
     ...overrides: (TPatch extends Patch<infer T> ? T : void)[]
   ) => ViewStyle;
@@ -43,4 +43,6 @@ export type RuntimePatch<TPatch extends Patch<any> | any> = {
   image: (
     ...overrides: (TPatch extends Patch<infer T> ? T : void)[]
   ) => ImageStyle;
+} & {
+  [name in keyof TPatch]: RuntimePatch<TPatch[name]>;
 };
