@@ -33,16 +33,17 @@ type ImagePatch<TOverrides extends string | void = void> = ImageStyle & {
   };
 };
 
+type StyleMethod<
+  TStyle extends ViewStyle | TextStyle | ImageStyle,
+  TPatch extends Patch<any> | any | void = void
+> = TPatch extends Patch<string>
+  ? (...overrides: (TPatch extends Patch<infer T> ? T : void)[]) => TStyle
+  : () => TStyle;
+
 export type RuntimePatch<TPatch extends Patch<any> | any | void = void> = {
-  view: (
-    ...overrides: (TPatch extends Patch<infer T> ? T : void)[]
-  ) => ViewStyle;
-  text: (
-    ...overrides: (TPatch extends Patch<infer T> ? T : void)[]
-  ) => TextStyle;
-  image: (
-    ...overrides: (TPatch extends Patch<infer T> ? T : void)[]
-  ) => ImageStyle;
+  view: StyleMethod<ViewStyle, TPatch>;
+  text: StyleMethod<TextStyle, TPatch>;
+  image: StyleMethod<ImageStyle, TPatch>;
 } & {
   [name in keyof TPatch]: RuntimePatch<TPatch[name]>;
 };

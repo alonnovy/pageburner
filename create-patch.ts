@@ -11,7 +11,7 @@ export function createPatch<
   TPatch extends Patch<any> & { [key: string]: Patch<any> | any }
 >(target: TPatch) {
   const result = {
-    text: (...overrides) => {
+    text: (...overrides: string[]) => {
       const result = _.omit(target.text, "_overrides") || {};
       if (target.text?._overrides && overrides.length) {
         overrides.forEach((o: any) =>
@@ -20,7 +20,7 @@ export function createPatch<
       }
       return result as TextStyle;
     },
-    view: (...overrides) => {
+    view: (...overrides: string[]) => {
       const result = _.omit(target.view, "_overrides") || {};
       if (target.view?._overrides && overrides.length) {
         overrides.forEach((o: any) =>
@@ -29,7 +29,7 @@ export function createPatch<
       }
       return result as ViewStyle;
     },
-    image: (...overrides) => {
+    image: (...overrides: string[]) => {
       const result = _.omit(target.image, "_overrides") || {};
       if (target.image?._overrides && overrides.length) {
         overrides.forEach((o: any) =>
